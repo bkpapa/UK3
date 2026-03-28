@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, initial-scale=1.0" />
+<title>Deal Board Dynamic Final</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    width: 1920px;
+    height: 260px;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #111;
+  }
+
+  body {
+    position: relative;
+  }
+
+  .board {
+    position: relative;
+    width: 1920px;
+    height: 260px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 30% 40%, rgba(255,200,70,0.14) 0%, rgba(255,200,70,0.00) 28%),
+      linear-gradient(90deg, #121212 0%, #1a1a1a 40%, #222222 100%);
+  }
+
+  /* ===== 左侧面板 ===== */
+  .left-panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 340px;
+    height: 260px;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #101010, #191919);
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .left-kicker {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #ffcf56;
+    text-transform: uppercase;
+  }
+
+  .left-title {
+    margin-top: 10px;
+    color: #fff;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    line-height: 0.9;
+    letter-spacing: -1px;
+  }
+
+  .left-title .l1 { font-size: 58px; }
+  .left-title .l2,
+  .left-title .l3 { font-size: 76px; }
+
+  /* ===== 主体连续区 ===== */
+  .main-strip {
+    position: absolute;
+    left: 340px;
+    top: 0;
+    width: 1580px;
+    height: 260px;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  /* ===== 主推模块（保持原版） ===== */
+  .hero {
+    position: relative;
+    width: 560px;
+    height: 224px;
+    margin-top: 18px;
+    margin-left: 12px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 50%, rgba(255,209,84,0.07) 0%, rgba(255,209,84,0.00) 34%);
+    pointer-events: none;
+  }
+
+  .hero-product {
+    position: absolute;
+    left: 26px;
+    top: 28px;
+    width: 170px;
+    height: 170px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .hero-product img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,0.18));
+  }
+
+  .hero-copy {
+    position: absolute;
+    left: 210px;
+    top: 24px;
+    width: 320px;
+    z-index: 2;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .badge {
+    display: inline-block;
+    min-width: 172px;
+    text-align: center;
+    background: linear-gradient(#ffd86c, #f3b733);
+    color: #111;
+    padding: 9px 22px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+  }
+
+  .headline {
+    margin-top: 12px;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .price {
+    margin-top: 12px;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    font-size: 70px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: #ffd65a;
+    white-space: nowrap;
+    animation: pricePulse 2.6s ease-in-out infinite;
+    transform-origin: left center;
+  }
+
+  @keyframes pricePulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 0 rgba(255,214,90,0); }
+    50% { transform: scale(1.03); text-shadow: 0 0 18px rgba(255,214,90,0.14); }
+  }
+
+  .sub {
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.62);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  /* ===== 右侧整体模块 ===== */
+  .products-wrap {
+    position: relative;
+    width: 988px;
+    height: 224px;
+    margin-top: 18px;
+    margin-left: 8px;
+    border-radius: 22px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.025) 48%, rgba(255,255,255,0.035) 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    overflow: hidden;
+  }
+
+  .products-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(255,255,255,0.00) 0%,
+        rgba(255,255,255,0.018) 18%,
+        rgba(255,255,255,0.00) 40%,
+        rgba(255,255,255,0.012) 64%,
+        rgba(255,255,255,0.00) 100%
+      );
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .products-viewport {
+    position: absolute;
+    left: 14px;
+    top: 9px;
+    width: 920px;
+    height: 206px;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .products-track {
+    display: flex;
+    gap: 20px;
+    height: 206px;
+    will-change: transform;
+    transition: transform 560ms cubic-bezier(0.22, 0.8, 0.22, 1);
+  }
+
+  .item {
+    position: relative;
+    width: 168px;
+    min-width: 168px;
+    height: 206px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.018) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.05),
+      0 6px 16px rgba(0,0,0,0.14);
+    overflow: hidden;
+  }
+
+  /* ===== 标签动效：更显眼，但不变大 ===== */
+  .discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    min-width: 84px;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ffd86c, #f1b028);
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    box-shadow:
+      0 3px 8px rgba(0,0,0,0.24),
+      0 0 8px rgba(255,200,70,0.10);
+    overflow: hidden;
+  }
+
+  .discount-badge::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.26) 50%,
+      rgba(255,255,255,0) 100%
+    );
+    transform: skewX(-24deg);
+    animation: badgeSweep 3.2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .item.multibuy .discount-badge {
+    box-shadow:
+      0 4px 10px rgba(0,0,0,0.26),
+      0 0 14px rgba(255,206,84,0.22);
+    animation: badgeGlowStrong 2.1s ease-in-out infinite;
+  }
+
+  .item.value .discount-badge {
+    opacity: 0.96;
+    box-shadow:
+      0 3px 8px rgba(0,0,0,0.22),
+      0 0 8px rgba(255,200,70,0.10);
+    animation: badgeGlowSoft 2.8s ease-in-out infinite;
+  }
+
+  @keyframes badgeGlowStrong {
+    0%, 100% {
+      filter: brightness(1);
+      box-shadow:
+        0 4px 10px rgba(0,0,0,0.26),
+        0 0 10px rgba(255,206,84,0.16);
+    }
+    50% {
+      filter: brightness(1.08);
+      box-shadow:
+        0 4px 10px rgba(0,0,0,0.26),
+        0 0 18px rgba(255,206,84,0.28);
+    }
+  }
+
+  @keyframes badgeGlowSoft {
+    0%, 100% {
+      filter: brightness(1);
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.22),
+        0 0 6px rgba(255,200,70,0.08);
+    }
+    50% {
+      filter: brightness(1.04);
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.22),
+        0 0 10px rgba(255,200,70,0.14);
+    }
+  }
+
+  @keyframes badgeSweep {
+    0%, 62% { left: -120%; }
+    82% { left: 145%; }
+    100% { left: 145%; }
+  }
+
+  .img-area {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 18px;
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .img-area img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.20));
+  }
+
+  .info-area {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 118px;
+    min-height: 38px;
+    text-align: center;
+    z-index: 2;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.15;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .info-area .name-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pack-red {
+    color: #ff4a4a;
+  }
+
+  .item-price {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    height: 40px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ffd86c 0%, #f1b028 100%);
+    color: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    box-shadow: 0 4px 14px rgba(255,193,43,0.18);
+    z-index: 3;
+    white-space: nowrap;
+  }
+
+  /* 仅保留右箭头 */
+  .nav-arrow {
+    position: absolute;
+    top: 50%;
+    width: 36px;
+    height: 68px;
+    transform: translateY(-50%);
+    opacity: 0.90;
+    cursor: pointer;
+    z-index: 5;
+    user-select: none;
+    filter:
+      drop-shadow(0 0 8px rgba(255,200,70,0.30))
+      drop-shadow(0 0 16px rgba(255,200,70,0.12));
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .nav-arrow:hover {
+    opacity: 1;
+  }
+
+  .nav-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .nav-arrow.right {
+    right: 18px;
+  }
+
+  .nav-arrow svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  img {
+    color: transparent;
+    font-size: 0;
+  }
+</style>
+</head>
+
+<body>
+<div class="board">
+
+  <div class="left-panel">
+    <div class="left-kicker">IN-STORE PROMO</div>
+    <div class="left-title">
+      <div class="l1">TODAY'S</div>
+      <div class="l2">DEAL</div>
+      <div class="l3">ZONE</div>
+    </div>
+  </div>
+
+  <div class="main-strip">
+
+    <div class="hero" id="hero">
+      <div class="hero-product">
+        <img id="heroImage" src="images/main.png" alt="">
+      </div>
+
+      <div class="hero-copy">
+        <div class="badge" id="heroBadge">BEST DEAL</div>
+        <div class="headline" id="heroHeadline">Top Pick This Week</div>
+        <div class="price" id="heroPrice">£ 9.99</div>
+        <div class="sub" id="heroSub">Limited-time offer.</div>
+      </div>
+    </div>
+
+    <div class="products-wrap">
+      <div class="products-viewport">
+        <div class="products-track" id="productsTrack"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-arrow right" id="nextBtn" aria-label="Next page">
+    <svg viewBox="0 0 42 78" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M10 12 L28 39 L10 66"
+        fill="none"
+        stroke="rgba(255,210,90,0.95)"
+        stroke-width="7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+
+</div>
+
+<script>
+  const heroData = {
+    image: "images/main.png",
+    badge: "BEST DEAL",
+    headline: "Top Pick This Week",
+    price: "£ 5.99",
+    sub: "Limited-time offer."
+  };
+
+  const products = [
+    {
+      image: "images/p1.png",
+      name: "BuzzBallz",
+      badge: "MULTIBUY",
+      type: "multibuy",
+      price: "2 FOR £8"
+    },
+    {
+      image: "images/p2.png",
+      name: "Au Vodka RTD",
+      badge: "MULTIBUY",
+      type: "multibuy",
+      price: "2 FOR £5"
+    },
+    {
+      image: "images/p3.png",
+      name: "KA Remix RTD",
+      badge: "MULTIBUY",
+      type: "multibuy",
+      price: "2 FOR £5"
+    },
+    {
+      image: "images/p4.png",
+      nameHtml: 'Saka Water <span class="pack-red">6 Pack</span>',
+      name: "SAKA Water 6 Pack",
+      badge: "VALUE",
+      type: "value",
+      price: "£4.50"
+    },
+    {
+      image: "images/p5.png",
+      nameHtml: 'Saka Water <span class="pack-red">24 Pack</span>',
+      name: "SAKA Water 24 Pack",
+      badge: "VALUE",
+      type: "value",
+      price: "£6"
+    },
+    {
+      image: "images/p6.png",
+      name: "Lost Mary 6K",
+      badge: "VALUE",
+      type: "value",
+      price: "£10"
+    },
+    {
+      image: "images/p7.png",
+      name: "Hayati 6K",
+      badge: "VALUE",
+      type: "value",
+      price: "£10"
+    }
+  ];
+
+  const VISIBLE_COUNT = 5;
+  const ITEM_WIDTH = 188;         // 168卡片宽 + 20间距
+  const LOOP_STEPS = products.length - VISIBLE_COUNT + 1; // 3: 12345 / 23456 / 34567
+  const AUTO_ADVANCE_MS = 2800;   // 每一屏停留时间
+  const SLIDE_ANIM_MS = 560;      // 平移动画时间
+
+  document.getElementById("heroImage").src = heroData.image;
+  document.getElementById("heroBadge").textContent = heroData.badge;
+  document.getElementById("heroHeadline").textContent = heroData.headline;
+  document.getElementById("heroPrice").textContent = heroData.price;
+  document.getElementById("heroSub").textContent = heroData.sub;
+
+  const track = document.getElementById("productsTrack");
+  const nextBtn = document.getElementById("nextBtn");
+  const wrap = document.querySelector(".products-wrap");
+
+  let currentIndex = 0;
+  let autoTimer = null;
+  let isResetting = false;
+
+  function makeItem(product) {
+    const item = document.createElement("div");
+    item.className = `item ${product.type || ""}`;
+    item.innerHTML = `
+      <div class="discount-badge">${product.badge}</div>
+      <div class="img-area">
+        <img src="${product.image}" alt="${product.name || ''}">
+      </div>
+      <div class="info-area">
+        <div class="name-text">${product.nameHtml || product.name || ""}</div>
+      </div>
+      <div class="item-price">${product.price}</div>
+    `;
+    return item;
+  }
+
+  function renderItems() {
+    track.innerHTML = "";
+    const loopProducts = [...products, ...products.slice(0, VISIBLE_COUNT - 1)];
+    loopProducts.forEach(product => {
+      track.appendChild(makeItem(product));
+    });
+  }
+
+  function updatePosition(animated = true) {
+    track.style.transition = animated
+      ? `transform ${SLIDE_ANIM_MS}ms cubic-bezier(0.22, 0.8, 0.22, 1)`
+      : "none";
+    track.style.transform = `translateX(-${currentIndex * ITEM_WIDTH}px)`;
+  }
+
+  function stopAuto() {
+    if (autoTimer) {
+      clearTimeout(autoTimer);
+      autoTimer = null;
+    }
+  }
+
+  function scheduleNext() {
+    stopAuto();
+    autoTimer = setTimeout(stepSlide, AUTO_ADVANCE_MS);
+  }
+
+  function stepSlide() {
+    if (isResetting) return;
+
+    if (currentIndex < LOOP_STEPS - 1) {
+      currentIndex += 1;
+      updatePosition(true);
+      scheduleNext();
+      return;
+    }
+
+    isResetting = true;
+
+    // 最后一屏 34567 也完整停留一个周期，然后再回到 12345
+    setTimeout(() => {
+      currentIndex = 0;
+      updatePosition(false);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          isResetting = false;
+          scheduleNext();
+        });
+      });
+    }, AUTO_ADVANCE_MS);
+  }
+
+  function startAuto() {
+    scheduleNext();
+  }
+
+  nextBtn.addEventListener("click", () => {
+    if (isResetting) return;
+
+    stopAuto();
+
+    if (currentIndex < LOOP_STEPS - 1) {
+      currentIndex += 1;
+      updatePosition(true);
+      scheduleNext();
+      return;
+    }
+
+    currentIndex = 0;
+    updatePosition(false);
+    scheduleNext();
+  });
+
+  wrap.addEventListener("mouseenter", stopAuto);
+  wrap.addEventListener("mouseleave", startAuto);
+
+  renderItems();
+  updatePosition(false);
+  startAuto();
+</script>
+</body>
+</html>
